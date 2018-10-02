@@ -5,7 +5,7 @@ import re
 Player = namedtuple('Player', ('full_name', 'last_name', 'another_last_name', 'code',))
 
 
-def get_home_player_name(match_id) -> list:
+def get_home_players(match_id) -> list:
     # away_player_names = set()
     home_players = []
     home_data = dbUtil.get_home_player_data(match_id)
@@ -18,7 +18,7 @@ def get_home_player_name(match_id) -> list:
     return home_players
 
 
-def get_away_player_name(match_id) -> list:
+def get_away_players(match_id) -> list:
     away_players = []
     away_data = dbUtil.get_away_player_data(match_id)
     for index in range(len(away_data)):
@@ -40,8 +40,8 @@ def get_last_name(full_name: str):
 
 def get_player_name_set(match_id):
     name_set = set()
-    home_players = get_home_player_name(match_id)
-    away_players = get_away_player_name(match_id)
+    home_players = get_home_players(match_id)
+    away_players = get_away_players(match_id)
     for player in home_players + away_players:
         name_set.add(player.full_name)
         name_set.add(player.last_name)

@@ -1,6 +1,6 @@
 import pymysql
 
-DEMO_MATCH_ID = 151595
+DEMO_MATCH_ID = 151596
 
 
 def extract_config_line(line):
@@ -15,7 +15,7 @@ def get_connection():
 
 def get_config():
     configs = []
-    with open('../dbconfig', 'r', encoding='utf-8') as file:
+    with open('dbconfig', 'r', encoding='utf-8') as file:
         lines = file.readlines()
         for line in lines:
             configs.append(extract_config_line(line))
