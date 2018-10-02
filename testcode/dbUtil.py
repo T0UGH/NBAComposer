@@ -15,7 +15,7 @@ def get_connection():
 
 def get_config():
     configs = []
-    with open('rhyme_config.cfg', 'r', encoding='utf-8') as file:
+    with open('../dbconfig', 'r', encoding='utf-8') as file:
         lines = file.readlines()
         for line in lines:
             configs.append(extract_config_line(line))
@@ -70,9 +70,37 @@ def get_away_player_data(match_id):
         db.close()
 
 
+def get_match_team_names(match_id):
+    try:
+        db = get_connection()
+        cursor = db.cursor()
+        sql = "SELECT guest_team, host_team FROM game WHERE match_id = %d" % match_id
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        return result[1], result[0]
+    except Exception as err:
+        print(err.with_traceback())
+    finally:
+        db.close()
+
+
+def get_match_ids():
+    try:
+        id_list = []
+        db = get_connection()
+        cursor = db.cursor()
+        sql = "SELECT match_id FROM game LIMIT 0, 1000"
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        for result in results:
+            id_list.append(result[0])
+        return id_list
+    except Exception as err:
+        print(err.with_traceback())
+    finally:
+        db.close()
+
+
 if __name__ == '__main__':
-    get_match_record(DEMO_MATCH_ID)
-    get_home_player_data(DEMO_MATCH_ID)
-    print('-' * 200)
-    get_away_player_data(DEMO_MATCH_ID)
+    print(get_match_ids())
 
