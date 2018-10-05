@@ -2,7 +2,12 @@ import testcode.dbUtil as dbUtil
 from collections import namedtuple
 import re
 
-Player = namedtuple('Player', ('full_name', 'last_name', 'another_last_name', 'code',))
+Player = namedtuple('Player', ('full_name', 'last_name', 'another_last_name', 'full_name_without_line', 'code'))
+
+
+def remove_line_from_full_name(full_name):
+    full_name_without_line = full_name.replace('-', ' ', 1)
+    return full_name_without_line
 
 
 def get_home_players(match_id) -> list:
@@ -13,7 +18,7 @@ def get_home_players(match_id) -> list:
         full_name = home_data[index][1]
         last_name = get_last_name(full_name)
         another_last_name = get_another_last_name(full_name)
-        home_players.append(Player(full_name, last_name, another_last_name, index))
+        home_players.append(Player(full_name, last_name, another_last_name,remove_line_from_full_name(full_name), index))
     # print(home_players)
     return home_players
 
@@ -25,7 +30,7 @@ def get_away_players(match_id) -> list:
         full_name = away_data[index][1]
         last_name = get_last_name(full_name)
         another_last_name = get_another_last_name(full_name)
-        away_players.append(Player(full_name, last_name, another_last_name, index))
+        away_players.append(Player(full_name, last_name, another_last_name, remove_line_from_full_name(full_name), index))
     # print(away_players)
     return away_players
 
@@ -46,6 +51,7 @@ def get_player_name_set(match_id):
         name_set.add(player.full_name)
         name_set.add(player.last_name)
         name_set.add(player.another_last_name)
+        name_set.add(player.full_name_without_line)
         name_set.add('大' + player.another_last_name)
         name_set.add('小' + player.another_last_name)
     name_set.update(('迈卡威', '麦卡杜', '慈世平', '德隆', '科比', '费弗斯', '恩瓦巴'))

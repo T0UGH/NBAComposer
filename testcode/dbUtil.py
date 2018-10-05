@@ -22,6 +22,42 @@ def get_config():
     return configs
 
 
+def get_home_record(match_id):
+    try:
+        db = get_connection()
+        cursor = db.cursor()
+        sql = "SELECT host_team FROM game WHERE match_id = %d" % match_id
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        team_name = result[0]
+        sql = "SELECT * FROM textrecord WHERE match_id = %d AND team = '%s' ORDER BY section_num, time_to_end DESC" % (match_id, team_name)
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        return results
+    except Exception as err:
+        print(err.with_traceback())
+    finally:
+        db.close()
+
+
+def get_away_record(match_id):
+    try:
+        db = get_connection()
+        cursor = db.cursor()
+        sql = "SELECT guest_team FROM game WHERE match_id = %d" % match_id
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        team_name = result[0]
+        sql = "SELECT * FROM textrecord WHERE match_id = %d AND team = '%s' ORDER BY section_num, time_to_end DESC" % (match_id, team_name)
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        return results
+    except Exception as err:
+        print(err.with_traceback())
+    finally:
+        db.close()
+
+
 def get_match_record(match_id):
     try:
         db = get_connection()
@@ -89,7 +125,7 @@ def get_match_ids():
         id_list = []
         db = get_connection()
         cursor = db.cursor()
-        sql = "SELECT match_id FROM game LIMIT 0, 1000"
+        sql = "SELECT match_id FROM game WHERE match_date >= str_to_date('01/01/2018', '%m/%d/%Y') LIMIT 0, 1000"
         cursor.execute(sql)
         results = cursor.fetchall()
         for result in results:
@@ -102,5 +138,7 @@ def get_match_ids():
 
 
 if __name__ == '__main__':
-    print(get_match_ids())
+    records = get_match_record(155902)
+    for record in records:
+        print(record)
 
