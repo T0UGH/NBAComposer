@@ -1,5 +1,4 @@
 from Template import choice_template
-from DataDef import daizhi_do
 
 
 def generate_quarter_head(quarter_num):
@@ -11,8 +10,8 @@ def generate_quarter_head(quarter_num):
 
 def fill_template(match_piece, match_info):
     piece_type = match_piece.type
-    team_name = match_info.home_name
-    other_team_name = match_info.away_name
+    team_name = match_info[0]
+    other_team_name = match_info[1]
     team_score = match_piece.end_home_score - match_piece.start_home_score
     other_team_score = match_piece.end_away_score - match_piece.start_away_score
     player_score = match_piece.player_score
@@ -65,9 +64,8 @@ def caculate_minutes(time, time_length):
     return int(reverse_time/60)
 
 
-if __name__ == '__main__':
-    match_pieces, match_info = daizhi_do()
+def generate_report(match_pieces, team_names):
     for index in range(len(match_pieces)):
         print(generate_quarter_head(index), end='')
         for match_piece in match_pieces[index]:
-            print(fill_template(match_piece, match_info), end='.')
+            print(fill_template(match_piece, team_names), end='.')
