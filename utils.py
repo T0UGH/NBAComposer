@@ -23,7 +23,9 @@ def get_record(start_time, end_time, section_num, team, records):
 
 
 def generate_player_list(records, team):
-
+    """
+    根据比赛的team_name来从records中获得在这支球队中这场比赛中上场的所有球员
+    """
     def analysis_change_text(change_team_text):
         left_index = change_team_text.find("(") + 1
         right_index = change_team_text.find(")")
@@ -32,7 +34,7 @@ def generate_player_list(records, team):
 
     player_list = []
     for record in records:
-        text = record[4]
+        text = record.event
         if "阵容调整" in text and record.team == team:
             player_sub_list = analysis_change_text(text)
             player_list += player_sub_list

@@ -4,6 +4,7 @@ import re
 import testcode.dbUtil as dbUtil
 import testcode.dataAnalysis as da
 
+"""Removed"""
 ExtractedRecord = namedtuple('ExtractedRecord', ['text_pattern', 'player_score_dict'])
 
 

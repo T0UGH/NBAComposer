@@ -1,35 +1,32 @@
 from grabRecord import grab_record
 from grabRecord import grab_team_name
 from dividePiece import divide_piece
-from findStarV2 import find_star
-from collections import namedtuple
-import utils
+from findStarV2 import fill_star_to_pieces
 from ReportGenerator import generate_report
 
-Piece = namedtuple('Piece', ['start_time', 'end_time', 'type', 'start_home_score', 'start_away_score', 'end_home_score',
-                             'end_away_score', 'player_name', 'player_score'])
 
+def compose_nba(match_id):
+    """
+    通过传入一场比赛对应的id,来生成对应的比赛战报
+    :param match_id:
+    :return: 直接将战报打印到控制台
+    """
 
-def main(match_id):
+    # 获取数据
     records = grab_record(match_id)
-    total_pieces, _ = divide_piece(records)
+
+    # 获取正常比赛的片段
+    total_pieces = divide_piece(records)
+
+    # 获取这场比赛的对阵双方,以元组形式返回 (主队,客队)
     team_name = grab_team_name(match_id)
-    home_player_list = utils.generate_player_list(records, team_name[0])
-    away_player_list = utils.generate_player_list(records, team_name[1])
-    for section_num in range(1, len(total_pieces)+1):
-        section_piece = total_pieces[section_num - 1]
-        for piece_num in range(len(total_pieces[section_num - 1])):
-            old_piece = total_pieces[section_num - 1][piece_num]
-            temp_team = team_name[0] if old_piece.type < 4 else team_name[1]
-            temp_player_list = home_player_list if old_piece.type < 4 else away_player_list
-            temp_record = utils.get_record(old_piece.begin_time, old_piece.end_time, section_num, temp_team, records)
-            (player_name, player_score) = find_star(temp_record, temp_player_list)
-            total_pieces[section_num - 1][piece_num] = Piece(old_piece.begin_time, old_piece.end_time,
-                                                             old_piece.type, old_piece.begin_host_score,
-                                                             old_piece.begin_guest_score, old_piece.end_host_score,
-                                                             old_piece.end_guest_score, player_name, player_score)
+
+    # 为每个数据片段补充发挥好的球员和这个球员得到的分数
+    fill_star_to_pieces(total_pieces, records, team_name)
+
+    # 生成战报
     generate_report(total_pieces, team_name)
 
 
 if __name__ == '__main__':
-    main(157292)
+    compose_nba(157256)

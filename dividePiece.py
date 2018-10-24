@@ -1,5 +1,7 @@
-from collections import namedtuple
 from grabRecord import grab_record
+from collections import namedtuple
+from DataDef import Piece
+
 
 total_time = []  # 所有播报时间集合
 total_difference_score = []  # 所有分数集合
@@ -9,55 +11,12 @@ total_guest_score = []  # 主队得分
 total_slice_set = []  # 片总集合
 final_total_slice_set = []  # 最终片总集合
 total_piece = []  # 总片输出
-guest_team = ''  # 主队
-host_team = ''  # 客队
 threshold = 7  # 阈值
 anxious_value = 5  # 焦灼值
-#  比赛分段
-MatchPiece = namedtuple('MatchPiece', ['begin_time', 'end_time', 'type', 'begin_guest_score', 'end_guest_score', 'begin_host_score', 'end_host_score'])
-# 比赛双方
-MatchInfo = namedtuple('MatchInfo', ['guest_name', 'host_name'])
 
 
 # 得到两个列表
 def mysql_query(results):
-    # # 打开数据库连接（ip/数据库用户名/登录密码/数据库名）
-    # db = pymysql.connect("localhost", "root", "qq980829", "nba_composer")
-    # # 使用 cursor() 方法创建一个游标对象 cursor
-    # cursor = db.cursor()
-    # cursor_team = db.cursor()
-    # # 获得两队名字
-    # sql_team = "SELECT guest_team, host_team \
-    #                 FROM game \
-    #                 WHERE %s = match_id;"
-    # cursor_team.execute(sql_team, temp_match_id)
-    # teams = cursor_team.fetchall()
-    # for team in teams:
-    #     global guest_team, host_team
-    #     guest_team = team[0]
-    #     host_team = team[1]
-    # section_number = 0  # 节数
-    # # total_time = []  # 所有播报时间集合
-    # # total_difference_score = []  # 所有分数集合
-    # # total = []  # all
-    # # SQL 查询语句
-    # while True:
-    #     time = []  # 每节时间集合
-    #     difference_score = []  # 每节分数差集合
-    #     host_score = []  # 每节客队分数集合
-    #     guest_score = []  # 每节主队分数集合
-    #     section_number = section_number + 1
-    #     sql_section = "SELECT distinct time_to_end, score \
-    #                 FROM textrecord \
-    #                 where %s = match_id and section_num = %s \
-    #                 order by time_to_end desc;"
-    #     # 执行SQL语句
-    #     cursor.execute(sql_section, (temp_match_id, section_number))
-    #     # 获取所有记录列表
-    #     results = cursor.fetchall()
-    #     if cursor.rowcount == 0:
-    #         break
-    #     print("第", str(section_number), "节OK!!!")
     section_number = 1
     time = []  # 每节时间集合
     difference_score = []  # 每节分数差集合
@@ -110,9 +69,9 @@ def mysql_query(results):
                 total_guest_score[i].insert(0, total_guest_score[i - 1][-1])
         if total_time[i][-1] != 0:
             total_time[i].append(0)
-            total_difference_score[i].append( 0)  # 暂定
-            total_host_score[i].append(0)  # 暂定
-            total_guest_score[i].append(0)  # 暂定
+            total_difference_score[i].append(total_difference_score[i][-1])
+            total_host_score[i].append(total_host_score[i][-1])
+            total_guest_score[i].append(total_guest_score[i][-1])
 
 
 # 获得导数
@@ -134,6 +93,8 @@ def data_fragmentation():
     for i in range(0, len(total_derivative)):  # 在第i节中
         slice_set = []  # 片集合
         begin_time = 720
+        if i > 3:
+            begin_time = 300
         state = 0
         begin_guest_s = total_guest_score[i][0]
         begin_host_s = total_host_score[i][0]
@@ -181,6 +142,8 @@ def data_compose():
     for i in range(0, len(total_slice_set)):  # 在每一节中
         final_slice_set = []
         begin_time = 720
+        if i > 3:
+            begin_time = 300
         state = total_slice_set[i][0].state  # 增减区间
         max_difference = total_slice_set[i][0].end_host_score - total_slice_set[i][0].end_guest_score
         begin_guest_s = total_slice_set[i][0].begin_guest_score
@@ -273,7 +236,7 @@ def get_type():
                 # 主队落后但缩小分差
                 elif final_total_slice_set[i][k].begin_host_score - final_total_slice_set[i][k].begin_guest_score > threshold:# and final_total_slice_set[i][k].end_host_score - final_total_slice_set[i][k].end_guest_score >= 0:
                     t_type = 6
-            match_piece = MatchPiece(final_total_slice_set[i][k].begin_time, final_total_slice_set[i][k].end_time, t_type, final_total_slice_set[i][k].begin_guest_score, final_total_slice_set[i][k].end_guest_score, final_total_slice_set[i][k].begin_host_score, final_total_slice_set[i][k].end_host_score)
+            match_piece = Piece(final_total_slice_set[i][k].begin_time, final_total_slice_set[i][k].end_time, t_type, final_total_slice_set[i][k].begin_host_score, final_total_slice_set[i][k].begin_guest_score, final_total_slice_set[i][k].end_host_score, final_total_slice_set[i][k].end_guest_score)
             piece.append(match_piece)
         total_piece.append(piece)
 
@@ -284,10 +247,12 @@ def divide_piece(records):
     data_fragmentation()
     data_compose()
     get_type()
-    team_name = MatchInfo(guest_team, host_team)
-    return total_piece, team_name
+    return total_piece
 
 
 if __name__ == '__main__':
     records = grab_record(151595)
-    (total_piece, team_name) = divide_piece(records)
+    total_piece = divide_piece(records)
+    for q in total_piece:
+        for p in q:
+            print(p)

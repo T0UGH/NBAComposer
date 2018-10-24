@@ -1,8 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from collections import namedtuple
-
-Record = namedtuple("Record", ['match_id', 'section_num', 'time_to_end', 'team', 'event', 'score'])
+from DataDef import Record
 
 
 def grab_team_name(match_id):
@@ -80,8 +78,10 @@ def grab_record(match_id):
 
 
 if __name__ == '__main__':
-    records = grab_team_name(157292)
-    print(records)
+    records = grab_record(157292)
+    for q in records:
+        print(q)
+
 
 
 

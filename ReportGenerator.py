@@ -2,13 +2,14 @@ from Template import choice_template
 
 
 def generate_quarter_head(quarter_num):
+    quarter_num = int(quarter_num)
     if quarter_num > 3:
-        return "第%d个加时赛:" % quarter_num - 3
+        return "第%d个加时赛:" % (quarter_num - 3)
     else:
         return ['首节比赛:', '次节比赛:', '易边再战:', '最后一节:'][quarter_num]
 
 
-def fill_template(match_piece, match_info):
+def fill_template(match_piece, match_info, is_add_quarter=False):
     piece_type = match_piece.type
     team_name = match_info[0]
     other_team_name = match_info[1]
@@ -16,7 +17,7 @@ def fill_template(match_piece, match_info):
     other_team_score = match_piece.end_away_score - match_piece.start_away_score
     player_score = match_piece.player_score
     player_name = match_piece.player_name
-    time = parse_time(match_piece.start_time)
+    time = parse_time(match_piece.start_time, is_add_quarter)
 
     template = choice_template(piece_type)
 
@@ -68,4 +69,4 @@ def generate_report(match_pieces, team_names):
     for index in range(len(match_pieces)):
         print(generate_quarter_head(index), end='')
         for match_piece in match_pieces[index]:
-            print(fill_template(match_piece, team_names), end='.')
+            print(fill_template(match_piece, team_names, is_add_quarter=(index > 3)), end='.')
