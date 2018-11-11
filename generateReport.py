@@ -2,6 +2,7 @@ from Template import choice_template
 
 
 def generate_report_head(match_info):
+
     templete = "北京时间<time>,<home_team_name>队坐镇主场迎战<away_team_name>队。"
     time_str = match_info.basic_match_info.time_str
     home_team_name = match_info.basic_match_info.home_team_name
