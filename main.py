@@ -1,8 +1,7 @@
-from grabMatchInfo import grab_record
-from grabMatchInfo import grab_team_name
+from grabMatchInfo import grab_match_info
 from dividePiece import divide_piece
 from findStarV2 import fill_star_to_pieces
-from ReportGenerator import generate_report
+from generateReport import generate_report
 
 
 def compose_nba(match_id):
@@ -13,20 +12,19 @@ def compose_nba(match_id):
     """
 
     # 获取数据
-    records = grab_record(match_id)
+    match_info = grab_match_info(match_id)
 
     # 获取正常比赛的片段
-    total_pieces = divide_piece(records)
+    total_pieces = divide_piece(match_info.records)
 
     # 获取这场比赛的对阵双方,以元组形式返回 (主队,客队)
-    team_name = grab_team_name(match_id)
 
     # 为每个数据片段补充发挥好的球员和这个球员得到的分数
-    fill_star_to_pieces(total_pieces, records, team_name)
+    fill_star_to_pieces(total_pieces, match_info.records, (match_info.basic_match_info.home_team_name, match_info.basic_match_info.away_team_name))
 
     # 生成战报
-    generate_report(total_pieces, team_name)
+    generate_report(total_pieces, match_info)
 
 
 if __name__ == '__main__':
-    compose_nba(157256)
+    compose_nba(156175)
