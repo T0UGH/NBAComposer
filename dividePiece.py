@@ -1,4 +1,4 @@
-from grabRecord import grab_record
+from grabMatchInfo import grab_record
 from collections import namedtuple
 from DataDef import Piece
 

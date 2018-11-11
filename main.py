@@ -1,5 +1,5 @@
-from grabRecord import grab_record
-from grabRecord import grab_team_name
+from grabMatchInfo import grab_record
+from grabMatchInfo import grab_team_name
 from dividePiece import divide_piece
 from findStarV2 import fill_star_to_pieces
 from ReportGenerator import generate_report
