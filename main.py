@@ -1,6 +1,6 @@
 from grabMatchInfo import grab_match_info
 from dividePiece import divide_piece
-from findStarV2 import fill_star_to_pieces
+from findStar import fill_star_to_pieces
 from generateReport import generate_report
 
 

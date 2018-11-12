@@ -101,6 +101,9 @@ class TeamStatistic:
                + ", " + str(self.steal_num) + ", " + str(self.turnover_num) + ", " + str(self.block_num) + ", " + str(self.score) \
                + ", " + ">"
 
+    def shooting_rate(self):
+        return self.shoot_num / self.shoot_attemp_num * 100
+
 
 class PlayerStatistic:
 

@@ -1,111 +1,56 @@
-import testcode.pointDict as pd
-from collections import namedtuple
-import re
-import testcode.dbUtil as dbUtil
-import testcode.dataAnalysis as da
-
-"""Removed"""
-ExtractedRecord = namedtuple('ExtractedRecord', ['text_pattern', 'player_score_dict'])
+import utils
 
 
-def get_point_dict():
-    return pd.point_dict
-
-
-def find_player_from_name(player_list, name):
+def find_who_score(text, player_list):
+    """
+    根据records中某一条record的text,找到这次得分的是哪位球员
+    """
     for player in player_list:
-        if name in (player.full_name, player.another_last_name, player.last_name):
-            return player.full_name
-    return None
+        if player in text:
+            return player
 
 
-def hide_all(record: str, team_name_list: list, player_name_list: list):
-    record = hide_team_name(record, team_name_list)
-    record = hide_location(record)
-    record = hide_player_name(record, player_name_list)
-    return record
+def find_max_score(player_dict):
+    player_list = [(key, value) for key, value in player_dict.items()]
+    return max(*player_list, key=lambda item: item[1])
 
 
-def hide_team_name(record: str, team_name_list: list):
-    for name in team_name_list:
-        if name in record:
-            record = record.replace(name, '<team_name>')
-    return record
+def find_star(records, player_list):
+    """
+    通过给定一个records来得到这段records中表现最好的球员
+    """
+    # player_list = generate_player_list(records)
+    player_dict = {player: 0 for player in player_list}
+    for record in records:
+        text = record.event
+        if "三分球进" in text:
+            # print(record)
+            player_dict[find_who_score(text, player_list)] += 3
+        elif "两分球进" in text:
+            # print(record)
+            player_dict[find_who_score(text, player_list)] += 2
+        elif "罚球命中" in text:
+            # print(record)
+            player_dict[find_who_score(text, player_list)] += 1
+        else:
+            pass
+    # 返回得分最高的球员和他的得分
+    return find_max_score(player_dict)
 
 
-def hide_location(record: str):
-    record = re.sub(r'(\d+)英尺外', "<location>", record)
-    return record
+def fill_star_to_pieces(total_pieces, records, team_name):
+    """
+    给切好的所有比赛片段填充上对应片段中发挥最好的球员和他的得分
+    """
+    # 获取主队的球员列表和客队的球员列表
+    home_player_list = utils.generate_player_list(records, team_name[0])
+    away_player_list = utils.generate_player_list(records, team_name[1])
 
-
-def hide_player_name(record: str, name_list: list):
-    name_list = list(name_list)
-    name_list = sorted(name_list, key=len, reverse=True)
-    for name in name_list:
-        if name in record:
-            record = record.replace(name, '<player_name>')
-    return record
-
-
-def extract_players(record, text_pattern):
-    pieces = text_pattern.split('<player_name>')
-    # print(pieces)
-    record_pieces = []
-    for record_piece in pieces:
-        if record_piece != '':
-            record_pieces.append(record_piece)
-    for piece in record_pieces:
-        record = record.replace(piece, '+')
-    record_pieces = record.split('+')
-    players = []
-    for record_piece in record_pieces:
-        if record_piece != '':
-            players.append(record_piece)
-    return players
-
-
-def extract_record(record: str, team_name_list, player_name_list, point_dict: dict):
-    text_pattern = hide_all(record, team_name_list, player_name_list)
-    players = extract_players(record, text_pattern)
-    points = point_dict.get(text_pattern)
-    if points is None:
-        point_score_dict = {player: 0 for player in players}
-    else:
-        point_score_dict = {player: point for player, point in zip(players, points)}
-    return point_score_dict
-
-
-def get_player_name_list(player_list):
-    name_list = list()
-    for player in player_list:
-        name_list.append(player.full_name)
-        name_list.append(player.last_name)
-        name_list.append(player.another_last_name)
-        name_list.append('大' + player.another_last_name)
-        name_list.append('小' + player.another_last_name)
-    name_list += ['迈卡威', '麦卡杜', '慈世平', '德隆', '科比', '费弗斯', '恩瓦巴']
-    return name_list
-
-
-def find_star(record_list: list, player_list: list, point_dict: dict, team_name_list) -> str:
-    player_name_list = get_player_name_list(player_list)
-    player_dict = {player.full_name: 0 for player in player_list}
-    for record in record_list:
-        point_score_dict = extract_record(record, team_name_list, player_name_list, point_dict)
-        for player_name in point_score_dict.keys():
-            full_name = find_player_from_name(player_list, player_name)
-            if full_name is not None:
-                player_dict[full_name] += point_score_dict[player_name]
-    return player_dict
-
-
-if __name__ == '__main__':
-    team_name_list = list(da.get_team_name_set(dbUtil.DEMO_MATCH_ID))
-    player_list = list(da.get_away_players(dbUtil.DEMO_MATCH_ID)) + list(da.get_home_players(dbUtil.DEMO_MATCH_ID))
-    origin_records = dbUtil.get_match_record(dbUtil.DEMO_MATCH_ID)
-    record_list = []
-    for origin_record in origin_records:
-        record_list.append(origin_record[4])
-    player_dict = find_star(record_list, player_list, get_point_dict(), team_name_list)
-    for player in da.get_away_players(dbUtil.DEMO_MATCH_ID):
-        print(player.full_name, " : ", player_dict[player.full_name])
+    # 填充球星
+    for index, quarter_pieces in enumerate(total_pieces):
+        quarter_num = index + 1
+        for piece in quarter_pieces:
+            temp_team = team_name[0] if piece.type < 4 else team_name[1]
+            temp_player_list = home_player_list if piece.type < 4 else away_player_list
+            temp_record = utils.get_record(piece.start_time, piece.end_time, quarter_num, temp_team, records)
+            (piece.player_name, piece.player_score) = find_star(temp_record, temp_player_list)
