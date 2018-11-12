@@ -38,19 +38,18 @@ def find_star(records, player_list):
     return find_max_score(player_dict)
 
 
-def fill_star_to_pieces(total_pieces, records, team_name):
+def fill_star_to_pieces(total_pieces, records, home_team_name, away_team_name):
     """
     给切好的所有比赛片段填充上对应片段中发挥最好的球员和他的得分
     """
     # 获取主队的球员列表和客队的球员列表
-    home_player_list = utils.generate_player_list(records, team_name[0])
-    away_player_list = utils.generate_player_list(records, team_name[1])
-
+    home_player_list = utils.generate_player_list(records, home_team_name)
+    away_player_list = utils.generate_player_list(records, away_team_name)
     # 填充球星
     for index, quarter_pieces in enumerate(total_pieces):
         quarter_num = index + 1
         for piece in quarter_pieces:
-            temp_team = team_name[0] if piece.type < 4 else team_name[1]
-            temp_player_list = home_player_list if piece.type < 4 else away_player_list
-            temp_record = utils.get_record(piece.start_time, piece.end_time, quarter_num, temp_team, records)
-            (piece.player_name, piece.player_score) = find_star(temp_record, temp_player_list)
+            temp_record = utils.get_record(piece.start_time, piece.end_time, quarter_num, home_team_name, records)
+            (piece.home_star_name, piece.home_star_score) = find_star(temp_record, home_player_list)
+            temp_record = utils.get_record(piece.start_time, piece.end_time, quarter_num, away_team_name, records)
+            (piece.away_star_name, piece.away_star_score) = find_star(temp_record, away_player_list)

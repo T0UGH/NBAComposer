@@ -1,15 +1,12 @@
-from collections import namedtuple
-
-# 比赛分段
-MatchPiece = namedtuple('MatchPiece', ['start_time', 'end_time', 'type', 'start_home_score', 'start_away_score',
-                                       'end_home_score', 'end_away_score', 'player_name', 'player_score'])
 
 
 # 比赛分段
 class Piece:
 
     def __init__(self, start_time, end_time, _type, start_home_score, start_away_score,
-                 end_home_score, end_away_score, player_name=None, player_score=None):
+                 end_home_score, end_away_score, home_star_name=None, home_star_score=None,
+                 away_star_name=None, away_star_score=None, home_shoot=None, home_shoot_attemp=None, home_efficiency_type=None,
+                 away_shoot=None, away_shoot_attemp=None, away_efficiency_type=None):
         self.start_time = start_time
         self.end_time = end_time
         self.type = _type
@@ -17,16 +14,28 @@ class Piece:
         self.start_away_score = start_away_score
         self.end_home_score = end_home_score
         self.end_away_score = end_away_score
-        self.player_name = player_name
-        self.player_score = player_score
+        self.home_star_name = home_star_name
+        self.home_star_score = home_star_score
+        self.away_star_name = away_star_name
+        self.away_star_score = away_star_score
+        self.home_shoot = home_shoot
+        self.home_shoot_attemp = home_shoot_attemp
+        self.home_efficiency_type = home_efficiency_type
+        self.away_shoot = away_shoot
+        self.away_shoot_attemp = away_shoot_attemp
+        self.away_efficiency_type = away_efficiency_type
 
     def __repr__(self):
         return str(self)
 
     def __str__(self):
         return "<" + str(self.start_time) + ", " + str(self.end_time) + ", " + str(self.type) \
-               + ", " + str(self.start_home_score) + ", " + str(self.start_away_score) + ", " + str(self.end_home_score) \
-               + ", " + str(self.end_away_score) + ", " + str(self.player_name) + ", " + str(self.player_score) + ">"
+               + ", " + str(self.start_home_score) + ", " + str(self.start_away_score) + ", " \
+               + str(self.end_home_score) + ", " + str(self.end_away_score) + ", " \
+               + str(self.home_star_name) + ", " + str(self.home_star_score) + ", " \
+               + str(self.away_star_name) + ", " + str(self.away_star_score) + ", " \
+               + str(self.home_shoot) + ", " + str(self.home_shoot_attemp) + ", " + str(self.home_efficiency_type) + ", " \
+               + str(self.away_shoot) + ", " + str(self.away_shoot_attemp) + ", " + str(self.away_efficiency_type) + ">"
 
 
 # 单条比赛记录

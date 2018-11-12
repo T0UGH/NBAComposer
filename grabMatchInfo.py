@@ -39,7 +39,8 @@ def grab_basic_match_info(match_id):
             home_score = int(td.string)
         else:
             home_quarter_scores.append(int(td.string))
-    basic_match_info = BasicMatchInfo(home_team_name, away_team_name, home_score, away_score, home_quarter_scores, away_quarter_scores, time_str)
+    basic_match_info = BasicMatchInfo(home_team_name, away_team_name, home_score, away_score,
+                                      home_quarter_scores, away_quarter_scores, time_str)
     return basic_match_info
 
 
