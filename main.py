@@ -1,7 +1,7 @@
 from grabMatchInfo import grab_match_info
 from dividePiece import divide_piece
 from findStar import fill_star_to_pieces
-from generateReport import generate_report
+from generateReportV2 import generate_report
 from judgeEfficiency import fill_shooting_rate_to_pieces
 
 
@@ -24,9 +24,11 @@ def compose_nba(match_id):
     # 为每个数据片段补充发挥好的球员和这个球员得到的分数
     fill_star_to_pieces(total_pieces, match_info.records, match_info.basic_match_info.home_team_name, match_info.basic_match_info.away_team_name)
 
-    print(total_pieces)
+    for quarter_pieces in total_pieces:
+        for piece in quarter_pieces:
+            print(piece)
     # 生成战报
-    # generate_report(total_pieces, match_info)
+    generate_report(total_pieces, match_info)
 
 
 if __name__ == '__main__':

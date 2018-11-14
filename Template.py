@@ -1,5 +1,8 @@
 import random
 
+tag_list = ['<time>', '<home_team_name>', '<home_team_score>', '<away_team_name>',
+            '<away_team_score>', '<home_player_name>', '<home_player_score>', '<away_player_score>']
+
 
 def choice_template(template_type: int) -> str:
 

@@ -24,7 +24,7 @@ def calculate_avg_shooting_rate(home_team_name, away_team_name, home_match_shoot
     return home_avg_shooting_rate, away_avg_shooting_rate
 
 
-def calculate_shooting_rate(shoot, shoot_attemp, default=50):
+def calculate_shooting_rate(shoot, shoot_attemp, default=0):
     try:
         piece_home_shooting_rate = shoot / shoot_attemp * 100
     except ZeroDivisionError:
