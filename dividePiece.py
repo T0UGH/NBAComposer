@@ -187,7 +187,7 @@ def data_compose():
             if state == 1 and final_total_slice_set[i][n].begin_guest_score - final_total_slice_set[i][n].begin_host_score < -threshold and final_total_slice_set[i][n].end_guest_score - final_total_slice_set[i][n].end_host_score > threshold:
                 for m in range(0, len(total_time[i])):
                     if (total_time[i][m] < final_total_slice_set[i][n].begin_time) and (total_time[i][m] > final_total_slice_set[i][n].end_time) and (total_guest_score[i][m] - total_host_score[i][m] <= 0) and (total_guest_score[i][m+1] - total_host_score[i][m+1] > 0):
-                        c = Compose(total_time[i][m], final_total_slice_set[i][n].end_time, final_total_slice_set[i][n].state, total_host_score[i][m], final_total_slice_set[i][n].end_host_s, total_guest_score[i][m], final_total_slice_set[i][n].end_guest_s)
+                        c = Compose(total_time[i][m], final_total_slice_set[i][n].end_time, final_total_slice_set[i][n].state, total_host_score[i][m], final_total_slice_set[i][n].end_host_score, total_guest_score[i][m], final_total_slice_set[i][n].end_guest_score)
                         final_total_slice_set[i].insert(n+1, c)
                         c = Compose(final_total_slice_set[i][n].begin_time, total_time[i][m],
                                     final_total_slice_set[i][n].state, final_total_slice_set[i][n].begin_host_score,
